@@ -1,0 +1,6 @@
+{
+  "name": "ayush-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ayush Portfolio — personal portfolio (Next.js frontend + Express backend)"
+}

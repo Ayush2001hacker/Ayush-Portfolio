@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Env
+.env
+.env*.local
+
+# Logs & OS
+*.log
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
