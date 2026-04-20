@@ -1,19 +1,285 @@
 @import "tailwindcss";
 
+/* Instagram-inspired design tokens */
 :root {
-  --background: #fafafa;
-  --foreground: #0a0a0a;
+  color-scheme: light;
+  /* Instagram web uses full white; avoids gray “gutter” beside the feed */
+  --ig-desktop-canvas: #ffffff;
+  --ig-bg: #fafafa;
+  --ig-surface: #ffffff;
+  --ig-elevated: #ffffff;
+  --ig-border: #dbdbdb;
+  --ig-border-strong: #c7c7c7;
+  --ig-text: #262626;
+  --ig-text-secondary: #737373;
+  --ig-text-muted: #8e8e8e;
+  --ig-link: #0095f6;
+  --ig-like: #ed4956;
+  --ig-nav: #000000;
+  --ig-overlay: rgba(0, 0, 0, 0.65);
+  --ig-story-ring: linear-gradient(
+    45deg,
+    #f58529,
+    #dd2a7b,
+    #8134af,
+    #515bd4
+  );
+  --ig-shimmer: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  --ig-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --ig-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #fafafa;
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ig-desktop-canvas: #000000;
+  --ig-bg: #000000;
+  --ig-surface: #000000;
+  --ig-elevated: #121212;
+  --ig-border: #262626;
+  --ig-border-strong: #363636;
+  --ig-text: #f5f5f5;
+  --ig-text-secondary: #a8a8a8;
+  --ig-text-muted: #737373;
+  --ig-link: #0095f6;
+  --ig-like: #ff3040;
+  --ig-nav: #f5f5f5;
+  --ig-overlay: rgba(0, 0, 0, 0.7);
+  --ig-shimmer: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  --ig-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+@theme inline {
+  --font-sans: var(--ig-font);
+  --color-ig-bg: var(--ig-bg);
+  --color-ig-surface: var(--ig-surface);
+  --color-ig-elevated: var(--ig-elevated);
+  --color-ig-border: var(--ig-border);
+  --color-ig-text: var(--ig-text);
+  --color-ig-text-secondary: var(--ig-text-secondary);
+  --color-ig-text-muted: var(--ig-text-muted);
+  --color-ig-link: var(--ig-link);
+  --color-ig-like: var(--ig-like);
+  --color-ig-nav: var(--ig-nav);
+}
+
+@layer base {
+  * {
+    border-color: var(--ig-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--ig-font);
+    background: var(--ig-bg);
+    color: var(--ig-text);
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+@layer components {
+  .ig-story-ring {
+    background: var(--ig-story-ring);
+    padding: 2.5px;
+    border-radius: 9999px;
+  }
+
+  /* Highlights only — rotating conic border (Instagram-style “live” ring). */
+  .ig-story-ring-animated-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+  }
+
+  @media (min-width: 768px) {
+    .ig-story-ring-animated-wrap {
+      width: 78px;
+      height: 78px;
+    }
+  }
+
+  .ig-story-ring-animated-spin {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: conic-gradient(
+      from 0deg,
+      #f58529,
+      #feda77,
+      #dd2a7b,
+      #8134af,
+      #515bd4,
+      #4c68d7,
+      #f58529
+    );
+    animation: ig-story-conic-rotate 2.4s linear infinite;
+  }
+
+  .ig-story-ring-animated-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: calc(100% - 5px);
+    height: calc(100% - 5px);
+    border-radius: 9999px;
+    background: var(--ig-bg);
+    padding: 2px;
+  }
+
+  @keyframes ig-story-conic-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ig-story-ring-animated-spin {
+      animation: none;
+      background: var(--ig-story-ring);
+    }
+  }
+
+  /* Full-bleed project tiles — light chips for date & title over photo */
+  .ig-project-cover-chip {
+    background-color: rgb(255 255 255 / 0.92);
+    color: rgb(39 39 42);
+    border: 1px solid rgb(0 0 0 / 0.06);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  [data-theme="dark"] .ig-project-cover-chip {
+    background-color: rgb(255 255 255 / 0.94);
+    color: rgb(24 24 27);
+    border-color: rgb(0 0 0 / 0.08);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+  }
+
+  /* Experience tiles — soft “timeline” text (no chip background). */
+  .ig-feed-timeline-label {
+    color: rgb(113 113 122);
+  }
+
+  [data-theme="dark"] .ig-feed-timeline-label {
+    color: rgb(161 161 170);
+  }
+
+  /* Employer logos (e.g. Data Axle) are authored for light UI; invert in dark theme. */
+  [data-theme="dark"] .ig-brand-logo {
+    filter: invert(1);
+  }
+
+  .ig-brand-logo-header {
+    background-color: #ffffff;
+  }
+
+  [data-theme="dark"] .ig-brand-logo-header {
+    background-color: var(--ig-elevated);
+  }
+
+  .ig-experience-brand-tile {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
+  }
+
+  [data-theme="dark"] .ig-experience-brand-tile {
+    background-color: var(--ig-elevated);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+
+  .ig-experience-brand-tile .ig-experience-brand-label {
+    color: #27272a;
+  }
+
+  [data-theme="dark"] .ig-experience-brand-tile .ig-experience-brand-label {
+    color: var(--ig-text);
+  }
+
+  .ig-experience-brand-overlay {
+    background-color: rgb(0 0 0 / 0.02);
+    transition: background-color 0.15s ease;
+  }
+
+  .group.ig-experience-brand-tile:hover .ig-experience-brand-overlay,
+  .group.ig-experience-brand-tile:focus-visible .ig-experience-brand-overlay {
+    background-color: rgb(0 0 0 / 0.06);
+  }
+
+  @media (min-width: 1024px) {
+    .group.ig-experience-brand-tile:hover .ig-experience-brand-overlay,
+    .group.ig-experience-brand-tile:focus-visible .ig-experience-brand-overlay {
+      background-color: rgb(0 0 0 / 0.08);
+    }
+  }
+
+  [data-theme="dark"] .ig-experience-brand-overlay {
+    background-color: rgb(255 255 255 / 0.04);
+  }
+
+  [data-theme="dark"] .group.ig-experience-brand-tile:hover .ig-experience-brand-overlay,
+  [data-theme="dark"] .group.ig-experience-brand-tile:focus-visible .ig-experience-brand-overlay {
+    background-color: rgb(255 255 255 / 0.1);
+  }
+
+  .ig-tap-scale {
+    transition: transform 0.12s ease;
+  }
+
+  .ig-tap-scale:active {
+    transform: scale(0.96);
+  }
+}
+
+@keyframes ig-heart-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  35% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+.ig-heart-burst {
+  animation: ig-heart-pop 0.85s ease forwards;
+}
+
+@keyframes ig-shimmer-move {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.ig-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: var(--ig-shimmer);
+  animation: ig-shimmer-move 1.2s infinite;
 }
