@@ -1,39 +1,23 @@
 "use client";
 
 import { useCallback } from "react";
-import { resyncEntity } from "@/lib/interactions/interactionsSlice";
+import { loadInteractions } from "@/lib/interactions/interactionsSlice";
 import { useAppDispatch, useInteractionTarget } from "@/lib/interactions/hooks";
-import {
-  readCommentsFromStorage,
-  readLikeFromStorage,
-} from "@/lib/interactions/storage";
+import { formatCommentTime } from "@/lib/interactions/formatCommentTime";
 import type { InteractionComment } from "@/lib/interactions/types";
-
-/** @deprecated Use `INTERACTIONS_SYNC_EVENT` from `@/lib/interactions/storage`. */
-export { INTERACTIONS_SYNC_EVENT as BLOG_SYNC_EVENT } from "@/lib/interactions/storage";
 
 export type BlogComment = InteractionComment;
 
-export {
-  dispatchInteractionsSync as dispatchBlogSync,
-  formatCommentTime,
-  newCommentId,
-  readCommentsFromStorage as readStoredComments,
-  readLikeFromStorage as readLike,
-} from "@/lib/interactions/storage";
+export { formatCommentTime };
 
-export { writeCommentsToStorage as writeStoredComments, writeLikeToStorage as writeLike } from "@/lib/interactions/storage";
+/** @deprecated No longer used — interactions are API-only. */
+export const BLOG_SYNC_EVENT = "ayush-interactions-sync";
 
-function readBlogPair(id: string) {
-  return {
-    kind: "blog" as const,
-    id,
-    like: readLikeFromStorage("blog", id),
-    comments: readCommentsFromStorage("blog", id),
-  };
+export function dispatchBlogSync() {
+  /* no-op: kept for any stale imports */
 }
 
-/** Blog posts use the shared interactions store (`blog` kind). */
+/** Blog posts use the shared interactions store (`blog` kind) + API. */
 export function useBlogPostInteractions(postId: string | null | undefined) {
   const dispatch = useAppDispatch();
   const id = postId ?? null;
@@ -41,7 +25,7 @@ export function useBlogPostInteractions(postId: string | null | undefined) {
 
   const reload = useCallback(() => {
     if (!id) return;
-    dispatch(resyncEntity(readBlogPair(id)));
+    dispatch(loadInteractions({ kind: "blog", id }));
   }, [dispatch, id]);
 
   return { liked, toggleLike, comments, addCommentText, reload };

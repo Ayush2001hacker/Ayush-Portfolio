@@ -9,6 +9,9 @@ frontend/out/
 .env
 .env*.local
 
+# Uploaded site files (resume PDF, etc.)
+backend/uploads/
+
 # Logs & OS
 *.log
 .DS_Store

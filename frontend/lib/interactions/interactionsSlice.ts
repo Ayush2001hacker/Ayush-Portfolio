@@ -1,68 +1,93 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { compositeKey, newCommentId } from "./storage";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { fetchInteractions, postComment, toggleLikeRequest } from "./api";
+import { getClientId } from "./clientId";
+import { compositeKey } from "./key";
 import type { InteractionComment, InteractionKind } from "./types";
 
 export type InteractionBranchState = {
   likes: Record<string, boolean>;
+  likeCounts: Record<string, number>;
   comments: Record<string, InteractionComment[]>;
-  /** First client read from `localStorage` applied once per entity key. */
   hydrated: Record<string, true>;
 };
 
 const initialState: InteractionBranchState = {
   likes: {},
+  likeCounts: {},
   comments: {},
   hydrated: {},
 };
 
-type EntityPayload = {
-  kind: InteractionKind;
-  id: string;
-  like: boolean;
-  comments: InteractionComment[];
-};
+export const loadInteractions = createAsyncThunk(
+  "interactions/load",
+  async (args: { kind: InteractionKind; id: string }) => {
+    try {
+      const clientId = typeof window !== "undefined" ? getClientId() : "";
+      return await fetchInteractions(args.kind, args.id, clientId);
+    } catch (err) {
+      console.warn("[interactions] load failed", err);
+      return { comments: [] as InteractionComment[], liked: false, likeCount: 0 };
+    }
+  },
+);
+
+export const toggleLikeRemote = createAsyncThunk(
+  "interactions/toggleLike",
+  async (args: { kind: InteractionKind; id: string }, { dispatch }) => {
+    const clientId = getClientId();
+    if (!clientId) {
+      throw new Error("Client id unavailable for like toggle");
+    }
+    try {
+      return await toggleLikeRequest(args.kind, args.id, clientId);
+    } catch (e) {
+      await dispatch(loadInteractions(args));
+      throw e;
+    }
+  },
+);
+
+export const addCommentRemote = createAsyncThunk(
+  "interactions/addComment",
+  async (
+    args: { kind: InteractionKind; id: string; text: string; authorName: string },
+    { dispatch },
+  ) => {
+    try {
+      return await postComment(args.kind, args.id, args.authorName, args.text);
+    } catch (e) {
+      await dispatch(loadInteractions({ kind: args.kind, id: args.id }));
+      throw e;
+    }
+  },
+);
 
 export const interactionsSlice = createSlice({
   name: "interactions",
   initialState,
-  reducers: {
-    hydrateEntity(state, { payload }: PayloadAction<EntityPayload>) {
-      const key = compositeKey(payload.kind, payload.id);
-      if (state.hydrated[key]) return;
-      state.hydrated[key] = true;
-      state.likes[key] = payload.like;
-      state.comments[key] = payload.comments;
-    },
-    resyncEntity(state, { payload }: PayloadAction<EntityPayload>) {
-      const key = compositeKey(payload.kind, payload.id);
-      state.hydrated[key] = true;
-      state.likes[key] = payload.like;
-      state.comments[key] = payload.comments;
-    },
-    toggleLike(state, { payload }: PayloadAction<{ kind: InteractionKind; id: string }>) {
-      const key = compositeKey(payload.kind, payload.id);
-      const prev = state.likes[key] ?? false;
-      state.likes[key] = !prev;
-      state.hydrated[key] = true;
-    },
-    addComment(
-      state,
-      { payload }: PayloadAction<{ kind: InteractionKind; id: string; text: string; authorName: string }>,
-    ) {
-      const key = compositeKey(payload.kind, payload.id);
-      const text = payload.text.trim();
-      const authorName = payload.authorName.trim() || "Anonymous";
-      if (!text) return;
-      if (!state.comments[key]) state.comments[key] = [];
-      state.comments[key].push({
-        id: newCommentId(),
-        text,
-        at: Date.now(),
-        authorName,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadInteractions.fulfilled, (state, action) => {
+        const { kind, id } = action.meta.arg;
+        const key = compositeKey(kind, id);
+        state.hydrated[key] = true;
+        state.likes[key] = action.payload.liked;
+        state.likeCounts[key] = action.payload.likeCount;
+        state.comments[key] = action.payload.comments;
+      })
+      .addCase(toggleLikeRemote.fulfilled, (state, action) => {
+        const { kind, id } = action.meta.arg;
+        const key = compositeKey(kind, id);
+        state.likes[key] = action.payload.liked;
+        state.likeCounts[key] = action.payload.likeCount;
+      })
+      .addCase(addCommentRemote.fulfilled, (state, action) => {
+        const { kind, id } = action.meta.arg;
+        const key = compositeKey(kind, id);
+        if (!state.comments[key]) state.comments[key] = [];
+        state.comments[key].push(action.payload.comment);
+        state.hydrated[key] = true;
       });
-      state.hydrated[key] = true;
-    },
   },
 });
-
-export const { hydrateEntity, resyncEntity, toggleLike, addComment } = interactionsSlice.actions;

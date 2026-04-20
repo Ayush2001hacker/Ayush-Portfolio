@@ -11,14 +11,7 @@ export const feedGradients = [
   "linear-gradient(135deg,#30cfd0,#330867)",
 ];
 
-export function fauxLikes(id: string) {
-  let n = 0;
-  for (let i = 0; i < id.length; i += 1) n += id.charCodeAt(i);
-  return 48 + (n % 220);
-}
-
 export type IgFeedTileProps = {
-  tileKey: string;
   index: number;
   topLabel: string;
   bottomTitle: string;
@@ -28,12 +21,13 @@ export type IgFeedTileProps = {
   coverImageSrc?: string;
   repositoryImageSrc?: string;
   liked: boolean;
+  /** Total likes from the interactions API (hover overlay on large screens). */
+  likeCount: number;
   ariaLabel: string;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 export function IgFeedTile({
-  tileKey,
   index,
   topLabel,
   bottomTitle,
@@ -43,6 +37,7 @@ export function IgFeedTile({
   coverImageSrc,
   repositoryImageSrc,
   liked,
+  likeCount,
   ariaLabel,
   onClick,
 }: IgFeedTileProps) {
@@ -146,7 +141,7 @@ export function IgFeedTile({
       >
         <span className="flex items-center gap-1.5 lg:text-[10px]">
           <span className="text-base leading-none text-white lg:text-sm">♥</span>
-          {fauxLikes(tileKey)}
+          {likeCount}
         </span>
         <span className="max-w-[92%] truncate px-1 text-center text-[9px] font-semibold uppercase tracking-wide">
           {overlayCaption}

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useSiteMedia } from "@/components/providers/ResumeHrefContext";
 import { profile } from "@/lib/site-content";
 import type { NavKey } from "./nav-items";
 import { primaryNavItems } from "./nav-items";
@@ -11,6 +12,9 @@ type Props = {
 };
 
 export function DesktopSidebar({ active, onChange }: Props) {
+  const { profilePhotoSrc } = useSiteMedia();
+  const remotePhoto = profilePhotoSrc.startsWith("http");
+
   return (
     <aside
       className="sticky top-0 z-40 hidden h-dvh w-[72px] shrink-0 border-r border-[var(--ig-border)] bg-[var(--ig-surface)] px-2 py-4 lg:flex lg:flex-col xl:w-56 xl:px-3"
@@ -18,13 +22,22 @@ export function DesktopSidebar({ active, onChange }: Props) {
     >
       <div className="mb-6 flex justify-center xl:justify-start xl:px-2">
         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full shadow-sm ring-1 ring-[var(--ig-border)]">
-          <Image
-            src={profile.photoSrc}
-            alt={profile.name}
-            fill
-            className="object-cover object-[center_15%]"
-            sizes="44px"
-          />
+          {remotePhoto ? (
+            // eslint-disable-next-line @next/next/no-img-element -- same dynamic API URL as profile header
+            <img
+              src={profilePhotoSrc}
+              alt={profile.name}
+              className="absolute inset-0 h-full w-full object-cover object-[center_15%]"
+            />
+          ) : (
+            <Image
+              src={profilePhotoSrc}
+              alt={profile.name}
+              fill
+              className="object-cover object-[center_15%]"
+              sizes="44px"
+            />
+          )}
         </div>
       </div>
 

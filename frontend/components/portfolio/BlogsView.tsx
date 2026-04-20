@@ -20,7 +20,7 @@ function BlogGridTile({
   onOpen: () => void;
   onBurst: (id: string, x: number, y: number) => void;
 }) {
-  const { liked, toggleLike } = useInteractionTarget("blog", post.id);
+  const { liked, likeCount, toggleLike } = useInteractionTarget("blog", post.id);
   const lastTapRef = useRef(0);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -50,13 +50,13 @@ function BlogGridTile({
 
   return (
     <IgFeedTile
-      tileKey={post.id}
       index={index}
       topLabel={post.date ?? "Blog"}
       bottomTitle={post.title}
       overlayCaption={post.title}
       repositoryImageSrc={post.feedThumbSrc}
       liked={liked}
+      likeCount={likeCount}
       ariaLabel={`Open preview for ${post.title}. Double-tap to like.`}
       onClick={onClick}
     />
