@@ -2,14 +2,35 @@
 
 import { LayoutGroup, motion } from "framer-motion";
 import { useRef, useState } from "react";
-import type { Highlight } from "@/lib/site-content";
+import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
+import { useHighlights } from "@/lib/highlights/HighlightsContext";
+import type { Highlight } from "@/lib/highlights/types";
+import { AddHighlightModal } from "./AddHighlightModal";
 import { HighlightDetailModal } from "./HighlightDetailModal";
+import { IconPlus } from "./icons";
+import { PermissionDeniedWrap } from "./PermissionDeniedWrap";
 
-type Props = { highlights: Highlight[] };
+function HighlightOrb({ h }: { h: Highlight }) {
+  const hasImage = Boolean(h.imageSrc);
+  return (
+    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[var(--ig-elevated)] text-2xl ring-1 ring-[var(--ig-border)] md:text-[26px]">
+      {hasImage ? (
+        // eslint-disable-next-line @next/next/no-img-element -- includes data URLs for custom highlights
+        <img src={h.imageSrc} alt="" className="h-full w-full object-cover object-center" />
+      ) : (
+        h.emoji
+      )}
+    </span>
+  );
+}
 
-export function HighlightsStrip({ highlights: list }: Props) {
+export function HighlightsStrip() {
+  const { highlights: list, addHighlight } = useHighlights();
+  const { isAdmin, authReady } = useAdminAuth();
+  const canAdd = authReady && isAdmin;
   const scroller = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<Highlight | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   const scrollBy = (dx: number) => {
     scroller.current?.scrollBy({ left: dx, behavior: "smooth" });
@@ -43,14 +64,43 @@ export function HighlightsStrip({ highlights: list }: Props) {
                   layoutId={`highlight-orb-${h.id}`}
                   className="ig-story-ring-animated-inner"
                 >
-                  <span className="flex h-full w-full items-center justify-center rounded-full bg-[var(--ig-elevated)] text-2xl ring-1 ring-[var(--ig-border)] md:text-[26px]">
-                    {h.emoji}
-                  </span>
+                  <HighlightOrb h={h} />
                 </motion.span>
               </span>
               <span className="max-w-[72px] truncate text-[11px] text-[var(--ig-text)] md:max-w-[84px]">{h.label}</span>
             </motion.button>
           ))}
+          <PermissionDeniedWrap
+            allowed={canAdd}
+            authReady={authReady}
+            className="flex shrink-0 flex-col items-center gap-1"
+          >
+            <motion.button
+              key="highlight-add"
+              type="button"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: list.length * 0.04 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex flex-col items-center gap-1"
+              style={{ scrollSnapAlign: "start" }}
+              aria-label="Add new highlight"
+              aria-haspopup="dialog"
+              onClick={() => setAddOpen(true)}
+            >
+              <span className="ig-story-ring-animated-wrap ig-tap-scale">
+                <span className="ig-story-ring-animated-spin opacity-40" aria-hidden />
+                <span className="ig-story-ring-animated-inner border border-dashed border-[var(--ig-border)] bg-[var(--ig-bg)]">
+                  <span className="flex h-full w-full items-center justify-center rounded-full text-[var(--ig-text-secondary)]">
+                    <IconPlus className="text-[var(--ig-text)]" />
+                  </span>
+                </span>
+              </span>
+              <span className="max-w-[72px] truncate text-[11px] font-medium text-[var(--ig-text-secondary)] md:max-w-[84px]">
+                New
+              </span>
+            </motion.button>
+          </PermissionDeniedWrap>
         </div>
         <button
           type="button"
@@ -63,6 +113,13 @@ export function HighlightsStrip({ highlights: list }: Props) {
           </svg>
         </button>
         <HighlightDetailModal highlight={open} onClose={() => setOpen(null)} />
+        <AddHighlightModal
+          open={addOpen}
+          onClose={() => setAddOpen(false)}
+          onSave={async (item) => {
+            await addHighlight(item);
+          }}
+        />
       </div>
     </LayoutGroup>
   );

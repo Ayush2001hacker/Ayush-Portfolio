@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useResumeHref } from "@/components/providers/ResumeHrefContext";
 import { homeContact, profile } from "@/lib/site-content";
 import { IconLinkedIn, IconMail, IconPhone } from "./icons";
 
@@ -27,6 +28,7 @@ function ChevronRight() {
 }
 
 export function ContactView() {
+  const { resumeHref } = useResumeHref();
   const [copied, setCopied] = useState(false);
 
   const copyEmail = async () => {
@@ -117,7 +119,7 @@ export function ContactView() {
             {copied ? "Copied email" : "Copy email"}
           </motion.button>
           <motion.a
-            href={profile.links.resume}
+            href={resumeHref}
             target="_blank"
             rel="noreferrer"
             whileTap={{ scale: 0.98 }}

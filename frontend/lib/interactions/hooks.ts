@@ -1,16 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect } from "react";
+import { useCallback, useLayoutEffect } from "react";
 import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
-import { addComment, hydrateEntity, resyncEntity, toggleLike } from "./interactionsSlice";
-import {
-  compositeKey,
-  INTERACTIONS_SYNC_EVENT,
-  readCommentsFromStorage,
-  readLikeFromStorage,
-  tryParseCommentsStorageKey,
-  tryParseLikeStorageKey,
-} from "./storage";
+import { addCommentRemote, loadInteractions, toggleLikeRemote } from "./interactionsSlice";
+import { compositeKey } from "./key";
 import type { InteractionComment, InteractionKind } from "./types";
 import type { AppDispatch, RootState } from "./store";
 
@@ -20,18 +13,8 @@ const EMPTY_COMMENTS: InteractionComment[] = [];
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-function readPair(kind: InteractionKind, id: string) {
-  return {
-    kind,
-    id,
-    like: readLikeFromStorage(kind, id),
-    comments: readCommentsFromStorage(kind, id),
-  };
-}
-
 /**
- * Hydrates from `localStorage` once per entity, then keeps Redux in sync with
- * same-tab events and `storage` (other tabs).
+ * Loads likes + comments from the portfolio API (`NEXT_PUBLIC_API_URL`).
  */
 export function useInteractionTarget(kind: InteractionKind, id: string | null | undefined) {
   const dispatch = useAppDispatch();
@@ -39,27 +22,11 @@ export function useInteractionTarget(kind: InteractionKind, id: string | null | 
 
   useLayoutEffect(() => {
     if (!id) return;
-    dispatch(hydrateEntity(readPair(kind, id)));
-  }, [dispatch, kind, id]);
-
-  useEffect(() => {
-    if (!id) return;
-    const sync = () => dispatch(resyncEntity(readPair(kind, id)));
-    window.addEventListener(INTERACTIONS_SYNC_EVENT, sync);
-    const onStorage = (e: StorageEvent) => {
-      const lk = tryParseLikeStorageKey(e.key);
-      const ck = tryParseCommentsStorageKey(e.key);
-      if (lk && lk.kind === kind && lk.id === id) sync();
-      if (ck && ck.kind === kind && ck.id === id) sync();
-    };
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(INTERACTIONS_SYNC_EVENT, sync);
-      window.removeEventListener("storage", onStorage);
-    };
+    dispatch(loadInteractions({ kind, id }));
   }, [dispatch, kind, id]);
 
   const liked = useAppSelector((s) => (key ? (s.interactions.likes[key] ?? false) : false));
+  const likeCount = useAppSelector((s) => (key ? (s.interactions.likeCounts[key] ?? 0) : 0));
   const comments = useAppSelector((s) => {
     if (!key) return EMPTY_COMMENTS;
     return s.interactions.comments[key] ?? EMPTY_COMMENTS;
@@ -67,19 +34,41 @@ export function useInteractionTarget(kind: InteractionKind, id: string | null | 
 
   const onToggleLike = useCallback(() => {
     if (!id) return;
-    dispatch(toggleLike({ kind, id }));
+    void dispatch(toggleLikeRemote({ kind, id }))
+      .unwrap()
+      .catch((err) => {
+        console.error(
+          "[interactions] Like request failed. Is the API running? Check CORS (FRONTEND_ORIGIN on the server) matches this page’s origin.",
+          err,
+        );
+      });
   }, [dispatch, kind, id]);
 
   const onAddCommentText = useCallback(
     (text: string, authorName: string) => {
       if (!id || !text.trim()) return;
-      dispatch(addComment({ kind, id, text, authorName: authorName.trim() || "Anonymous" }));
+      void dispatch(
+        addCommentRemote({
+          kind,
+          id,
+          text,
+          authorName: authorName.trim() || "Anonymous",
+        }),
+      )
+        .unwrap()
+        .catch((err) => {
+          console.error(
+            "[interactions] Comment request failed. Is the API running and MongoDB connected?",
+            err,
+          );
+        });
     },
     [dispatch, kind, id],
   );
 
   return {
     liked,
+    likeCount,
     comments,
     toggleLike: onToggleLike,
     addCommentText: onAddCommentText,

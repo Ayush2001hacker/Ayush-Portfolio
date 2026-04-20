@@ -19,6 +19,6 @@ cd backend && npm install && npm run dev
 ```
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
-- API health: [http://localhost:4000/health](http://localhost:4000/health)
+- API health: [http://localhost:5001/health](http://localhost:5001/health)
 
 Set `FRONTEND_ORIGIN` in production if the frontend URL differs from the default.

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { highlights, profile } from "@/lib/site-content";
+import { profile } from "@/lib/site-content";
 import { BottomNav, type NavKey } from "./BottomNav";
 import { ContactView } from "./ContactView";
 import { DesktopSidebar } from "./DesktopSidebar";
@@ -15,6 +15,7 @@ import { AdminView } from "./AdminView";
 import { ProjectFeed } from "./ProjectFeed";
 import { StackView } from "./StackView";
 import { TopBar } from "./TopBar";
+import { useResumeHref } from "@/components/providers/ResumeHrefContext";
 import { useIgTheme } from "./useIgTheme";
 
 const titles: Record<NavKey, string> = {
@@ -37,7 +38,7 @@ function Section({ nav, projectQuery = "" }: { nav: NavKey; projectQuery?: strin
           transition={{ duration: 0.2 }}
         >
           <ProfileHeader profile={profile} />
-          <HighlightsStrip highlights={highlights} />
+          <HighlightsStrip />
           <ProjectFeed filterQuery={projectQuery} />
         </motion.div>
       )}
@@ -90,6 +91,7 @@ function Section({ nav, projectQuery = "" }: { nav: NavKey; projectQuery?: strin
 }
 
 export function PortfolioApp() {
+  const { resumeHref } = useResumeHref();
   const { theme, toggle } = useIgTheme();
   const searchParams = useSearchParams();
   const [nav, setNav] = useState<NavKey>("home");
@@ -118,7 +120,7 @@ export function PortfolioApp() {
             onToggleTheme={toggle}
             query={deskQuery}
             onQueryChange={setDeskQuery}
-            resumeHref={profile.links.resume}
+            resumeHref={resumeHref}
             onContact={() => setNav("contact")}
           />
         </div>

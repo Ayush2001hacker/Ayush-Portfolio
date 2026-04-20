@@ -35,7 +35,7 @@ type Sheet =
   | { kind: "cert"; cert: CertificationItem }
   | { kind: "exp"; role: ExperienceRole };
 
-type PortfolioGridTileProps = Omit<IgFeedTileProps, "liked" | "onClick" | "tileKey"> & {
+type PortfolioGridTileProps = Omit<IgFeedTileProps, "liked" | "likeCount" | "onClick"> & {
   kind: InteractionKind;
   entityId: string;
   onOpen: () => void;
@@ -43,7 +43,7 @@ type PortfolioGridTileProps = Omit<IgFeedTileProps, "liked" | "onClick" | "tileK
 };
 
 function PortfolioGridTile({ kind, entityId, onOpen, onBurst, ...tile }: PortfolioGridTileProps) {
-  const { liked, toggleLike } = useInteractionTarget(kind, entityId);
+  const { liked, likeCount, toggleLike } = useInteractionTarget(kind, entityId);
   const lastTapRef = useRef(0);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -71,7 +71,9 @@ function PortfolioGridTile({ kind, entityId, onOpen, onBurst, ...tile }: Portfol
     [entityId, onBurst, onOpen, toggleLike],
   );
 
-  return <IgFeedTile {...tile} tileKey={entityId} liked={liked} onClick={onClick} />;
+  return (
+    <IgFeedTile {...tile} liked={liked} likeCount={likeCount} onClick={onClick} />
+  );
 }
 
 export function ProjectFeed({ filterQuery = "" }: Props) {

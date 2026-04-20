@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { IconLinkedIn, IconMail, IconPhone } from "./icons";
+import { useCallback, useRef, useState } from "react";
+import { useSiteMedia } from "@/components/providers/ResumeHrefContext";
+import { uploadProfilePhoto } from "@/lib/admin/siteUploadApi";
+import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
+import { PermissionDeniedWrap } from "./PermissionDeniedWrap";
+import { IconLinkedIn, IconMail, IconPencil, IconPhone } from "./icons";
 import { homeContact, profile as siteProfile } from "@/lib/site-content";
 
 type Props = { profile: typeof siteProfile };
@@ -26,26 +31,95 @@ function VerifiedBadge() {
 }
 
 export function ProfileHeader({ profile: p }: Props) {
-  const resumeHref = p.links.resume;
+  const { resumeHref, profilePhotoSrc, refreshSiteMedia } = useSiteMedia();
+  const { isAdmin, authReady } = useAdminAuth();
+  const canEditPhoto = authReady && isAdmin;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  const openPhotoPicker = useCallback(() => {
+    setPhotoError(null);
+    fileInputRef.current?.click();
+  }, []);
+
+  const onProfilePhotoSelected = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      setPhotoError(null);
+      setPhotoBusy(true);
+      try {
+        await uploadProfilePhoto(file);
+        await refreshSiteMedia();
+        window.dispatchEvent(new Event("site-settings-changed"));
+      } catch (err) {
+        setPhotoError(err instanceof Error ? err.message : "Upload failed");
+      } finally {
+        setPhotoBusy(false);
+      }
+    },
+    [refreshSiteMedia],
+  );
+
+  const remotePhoto = profilePhotoSrc.startsWith("http");
 
   return (
     <section className="border-b border-[var(--ig-border)] px-4 pb-4 pt-2 lg:px-0 lg:pb-10 lg:pt-8">
       <div className="flex gap-5 lg:gap-16">
         <div className="shrink-0 pt-1 lg:pt-0">
-          <div className="ig-story-ring ig-tap-scale">
-            <div className="relative flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[var(--ig-bg)] p-[2px] sm:h-[96px] sm:w-[96px] lg:h-[150px] lg:w-[150px]">
-              <div className="relative h-full w-full overflow-hidden rounded-full">
-                <Image
-                  src={p.photoSrc}
-                  alt={`${p.fullName} — profile photo`}
-                  fill
-                  className="object-cover object-[center_15%]"
-                  sizes="(max-width: 1023px) 96px, 150px"
-                  priority
-                />
+          <PermissionDeniedWrap allowed={canEditPhoto} authReady={authReady} className="flex flex-col items-center">
+            <div className="ig-story-ring ig-tap-scale">
+              <div className="relative flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[var(--ig-bg)] p-[2px] sm:h-[96px] sm:w-[96px] lg:h-[150px] lg:w-[150px]">
+                <div className="group relative h-full w-full overflow-hidden rounded-full ring-offset-2 ring-offset-[var(--ig-bg)] focus-within:ring-2 focus-within:ring-[var(--ig-link)]">
+                  {remotePhoto ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- dynamic API URL
+                    <img
+                      src={profilePhotoSrc}
+                      alt={`${p.fullName} — profile photo`}
+                      className="absolute inset-0 h-full w-full object-cover object-[center_15%]"
+                    />
+                  ) : (
+                    <Image
+                      src={profilePhotoSrc}
+                      alt={`${p.fullName} — profile photo`}
+                      fill
+                      className="object-cover object-[center_15%]"
+                      sizes="(max-width: 1023px) 96px, 150px"
+                      priority
+                    />
+                  )}
+                  {canEditPhoto ? (
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                      className="sr-only"
+                      onChange={onProfilePhotoSelected}
+                    />
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={canEditPhoto ? openPhotoPicker : undefined}
+                    disabled={photoBusy}
+                    className="pointer-events-none absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-full bg-black/0 opacity-0 transition-[opacity,background-color] duration-200 group-hover:pointer-events-auto group-hover:bg-black/45 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:bg-black/45 group-focus-within:opacity-100 disabled:cursor-not-allowed disabled:group-hover:pointer-events-none disabled:group-hover:opacity-0"
+                    aria-label={photoBusy ? "Uploading photo…" : "Change profile photo"}
+                    title={canEditPhoto ? "Change profile photo" : undefined}
+                  >
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/65 shadow-md ring-1 ring-white/35 sm:h-10 sm:w-10 lg:h-11 lg:w-11">
+                      <IconPencil className="h-[18px] w-[18px] text-white sm:h-5 sm:w-5" />
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </PermissionDeniedWrap>
+          {photoError ? (
+            <p className="mt-1 max-w-[10rem] text-center text-[10px] font-medium leading-tight text-rose-600 lg:max-w-[9rem]">
+              {photoError}
+            </p>
+          ) : null}
         </div>
 
         <div className="min-w-0 flex-1 space-y-2 lg:space-y-4">
