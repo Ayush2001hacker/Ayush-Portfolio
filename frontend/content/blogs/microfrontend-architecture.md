@@ -5,9 +5,9 @@ They fail because **they don’t scale with teams**.
 
 As applications grow, a single frontend codebase becomes:
 
-* Hard to maintain
-* Slow to deploy
-* Painful for multiple teams to work on
+- Hard to maintain
+- Slow to deploy
+- Painful for multiple teams to work on
 
 This is where **Microfrontend Architecture** comes in.
 
@@ -17,16 +17,16 @@ This is where **Microfrontend Architecture** comes in.
 
 In a typical React app:
 
-* One repo
-* One build pipeline
-* One deployment
+- One repo
+- One build pipeline
+- One deployment
 
 Sounds simple — but at scale:
 
-* Every change triggers a full build
-* Teams block each other
-* Deployments become risky
-* Code ownership becomes unclear
+- Every change triggers a full build
+- Teams block each other
+- Deployments become risky
+- Code ownership becomes unclear
 
 👉 Result: **Slow development + fragile releases**
 
@@ -40,11 +40,11 @@ Instead of one large app, you split it into **independently developed and deploy
 
 Each module:
 
-* Owns a specific feature (e.g., Auth, Dashboard, Billing)
-* Has its own codebase
-* Can be deployed independently
+- Owns a specific feature (e.g., Auth, Dashboard, Billing)
+- Has its own codebase
+- Can be deployed independently
 
-👉 Think: *Frontend = collection of mini apps*
+👉 Think: _Frontend = collection of mini apps_
 
 ---
 
@@ -52,17 +52,14 @@ Each module:
 
 A typical setup looks like:
 
-* **Shell / Container App**
+- **Shell / Container App**
+  - Loads and orchestrates microfrontends
 
-  * Loads and orchestrates microfrontends
+- **Microfrontends**
+  - Feature-based apps (e.g., Navbar, Dashboard, Profile)
 
-* **Microfrontends**
-
-  * Feature-based apps (e.g., Navbar, Dashboard, Profile)
-
-* **Shared Dependencies**
-
-  * React, UI libraries, utilities
+- **Shared Dependencies**
+  - React, UI libraries, utilities
 
 ---
 
@@ -105,14 +102,14 @@ Avoid tight coupling. Use:
 
 ### ✅ Recommended
 
-* Props passing (if embedded)
-* Custom events
-* Shared state via global store (carefully)
+- Props passing (if embedded)
+- Custom events
+- Shared state via global store (carefully)
 
 ### ❌ Avoid
 
-* Direct imports between apps
-* Shared mutable state everywhere
+- Direct imports between apps
+- Shared mutable state everywhere
 
 👉 Rule: **Loose coupling, clear contracts**
 
@@ -135,10 +132,10 @@ shared: {
 
 ## 🚀 Benefits
 
-* Independent deployments
-* Faster team velocity
-* Better ownership
-* Scalable architecture
+- Independent deployments
+- Faster team velocity
+- Better ownership
+- Scalable architecture
 
 ---
 
@@ -146,10 +143,10 @@ shared: {
 
 Microfrontends are not free.
 
-* Increased complexity
-* Version conflicts
-* Performance overhead (multiple bundles)
-* Harder debugging
+- Increased complexity
+- Version conflicts
+- Performance overhead (multiple bundles)
+- Harder debugging
 
 👉 If your app is small, this is overkill.
 
@@ -159,15 +156,15 @@ Microfrontends are not free.
 
 Use it when:
 
-* Multiple teams work on the same product
-* App is large and growing
-* Independent deployments are needed
+- Multiple teams work on the same product
+- App is large and growing
+- Independent deployments are needed
 
 Avoid when:
 
-* Small/medium apps
-* Single team
-* No scaling issues yet
+- Small/medium apps
+- Single team
+- No scaling issues yet
 
 ---
 
@@ -175,14 +172,14 @@ Avoid when:
 
 Imagine an e-commerce app:
 
-* Cart → separate microfrontend
-* Product listing → separate
-* User profile → separate
+- Cart → separate microfrontend
+- Product listing → separate
+- User profile → separate
 
 Each team can:
 
-* Build independently
-* Deploy without affecting others
+- Build independently
+- Deploy without affecting others
 
 ---
 
@@ -207,6 +204,6 @@ to
 
 If you're working on frontend architecture, system design, or scaling React apps — feel free to connect.
 
-* [LinkedIn](https://www.linkedin.com/in/ayush-bhagat)
-* [GitHub](https://github.com/Ayush2001hacker)
-* [Portfolio](/)
+- [LinkedIn](https://www.linkedin.com/in/ayush-bhagat-00a79b22a/)
+- [GitHub](https://github.com/Ayush2001hacker)
+- [Portfolio](/)
