@@ -1,6 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
+
+/** ~1/3 viewport per tile on mobile; fewer columns on `lg+`. */
+const TILE_COVER_SIZES =
+  "(max-width: 1024px) 34vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 18vw";
+const TILE_LOGO_SIZES = "(max-width: 1024px) 28vw, 20vw";
 
 export const feedGradients = [
   "linear-gradient(135deg,#667eea,#764ba2)",
@@ -63,11 +69,14 @@ export function IgFeedTile({
     >
       {neutralSurface && tileCoverFill ? (
         <>
-          <img
-            src={fillSrc}
+          <Image
+            src={fillSrc!}
             alt=""
+            fill
+            sizes={TILE_COVER_SIZES}
+            className="pointer-events-none z-[1] object-cover object-center"
+            {...(index < 6 ? { priority: true } : { loading: "lazy" as const })}
             decoding="async"
-            className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover object-center"
           />
           <span className="ig-experience-brand-overlay pointer-events-none absolute inset-0 z-[2]" />
         </>
@@ -116,21 +125,29 @@ export function IgFeedTile({
       </span>
       {centerImageSrc && (
         <span className="pointer-events-none absolute inset-0 z-[1] flex w-full items-center justify-center px-2 pt-7 pb-9 lg:pt-8 lg:pb-10">
-          <img
+          <Image
             src={centerImageSrc}
             alt=""
+            width={320}
+            height={160}
+            sizes={TILE_LOGO_SIZES}
+            {...(index < 6 ? { priority: true } : { loading: "lazy" as const })}
             decoding="async"
-            className="ig-brand-logo max-h-[42%] max-w-[80%] object-contain"
+            className="ig-brand-logo h-auto max-h-[42%] w-auto max-w-[80%] object-contain"
           />
         </span>
       )}
       {badgeImageSrc && (
         <span className="pointer-events-none absolute inset-0 z-[1] flex w-full items-center justify-center px-2 pt-7 pb-10 lg:pt-8 lg:pb-11">
-          <img
+          <Image
             src={badgeImageSrc}
             alt=""
+            width={280}
+            height={280}
+            sizes={TILE_LOGO_SIZES}
+            {...(index < 6 ? { priority: true } : { loading: "lazy" as const })}
             decoding="async"
-            className="max-h-[54%] max-w-[82%] object-contain object-center"
+            className="h-auto max-h-[54%] w-auto max-w-[82%] object-contain object-center"
           />
         </span>
       )}

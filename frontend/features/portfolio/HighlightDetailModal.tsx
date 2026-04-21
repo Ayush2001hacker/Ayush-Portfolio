@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
+import { isDataOrBlobImageSrc } from "@/lib/images/inlineSrc";
 import { isDeletableCustomHighlightId } from "@/lib/highlights/customHighlight";
 import { useHighlights } from "@/lib/highlights/HighlightsContext";
 import type { Highlight } from "@/lib/highlights/types";
@@ -124,12 +126,25 @@ export function HighlightDetailModal({ highlight, onClose }: Props) {
                 className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--ig-elevated)] text-lg ring-1 ring-[var(--ig-border)] sm:h-11 sm:w-11 sm:text-xl"
               >
                 {highlight.imageSrc ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={highlight.imageSrc}
-                    alt=""
-                    className="h-full w-full object-cover object-center"
-                  />
+                  isDataOrBlobImageSrc(highlight.imageSrc) ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={highlight.imageSrc}
+                      alt=""
+                      className="h-full w-full object-cover object-center"
+                    />
+                  ) : (
+                    <span className="relative block h-full w-full">
+                      <Image
+                        src={highlight.imageSrc}
+                        alt=""
+                        fill
+                        sizes="44px"
+                        loading="lazy"
+                        className="object-cover object-center"
+                      />
+                    </span>
+                  )
                 ) : (
                   highlight.emoji
                 )}
@@ -175,12 +190,26 @@ export function HighlightDetailModal({ highlight, onClose }: Props) {
               )}
               {highlight.imageSrc && (
                 <div className="mt-4 overflow-hidden rounded-xl ring-1 ring-[var(--ig-border)]">
-                  <img
-                    src={highlight.imageSrc}
-                    alt={highlight.imageAlt ?? ""}
-                    className="max-h-[min(52vh,420px)] w-full bg-[var(--ig-elevated)] object-contain object-center"
-                    decoding="async"
-                  />
+                  {isDataOrBlobImageSrc(highlight.imageSrc) ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={highlight.imageSrc}
+                      alt={highlight.imageAlt ?? ""}
+                      className="max-h-[min(52vh,420px)] w-full bg-[var(--ig-elevated)] object-contain object-center"
+                      decoding="async"
+                    />
+                  ) : (
+                    <Image
+                      src={highlight.imageSrc}
+                      alt={highlight.imageAlt ?? ""}
+                      width={960}
+                      height={540}
+                      sizes="(max-width: 640px) 100vw, 36rem"
+                      loading="lazy"
+                      decoding="async"
+                      className="max-h-[min(52vh,420px)] w-full bg-[var(--ig-elevated)] object-contain object-center"
+                    />
+                  )}
                 </div>
               )}
               <div className="mt-5 flex flex-wrap gap-2">

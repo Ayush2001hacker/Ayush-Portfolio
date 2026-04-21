@@ -1,5 +1,6 @@
-import express from "express";
+import compression from "compression";
 import cors from "cors";
+import express from "express";
 import interactionsRouter from "./routes/interactions.routes.js";
 import userRoutes from "./routes/userRoutes.js";
 import siteRoutes from "./routes/site.routes.js";
@@ -18,6 +19,7 @@ export function createApp() {
       allowedHeaders: ["Content-Type", "Authorization"],
     }),
   );
+  app.use(compression());
   app.use(express.json({ limit: "64kb" }));
 
   app.get("/health", (_req, res) => {

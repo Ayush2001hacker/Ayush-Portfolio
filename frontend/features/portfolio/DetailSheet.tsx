@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { EntityInteractionPanel } from "@/components/interactions/EntityInteractionPanel";
@@ -78,15 +79,19 @@ export function DetailSheet({
           >
             {headerImageSrc && (
               <div className="ig-brand-logo-header mb-4 flex justify-center rounded-xl py-3 ring-1 ring-[var(--ig-border)]">
-                <img
+                <Image
                   src={headerImageSrc}
                   alt={headerImageAlt ?? ""}
+                  width={440}
+                  height={220}
+                  sizes="(max-width: 640px) 85vw, 400px"
+                  loading="lazy"
+                  decoding="async"
                   className={`object-contain ${
                     headerImageTone === "media"
                       ? "h-auto max-h-48 w-auto max-w-[min(100%,220px)] sm:max-h-52"
                       : "ig-brand-logo h-9 w-auto max-w-[min(100%,220px)]"
                   }`}
-                  decoding="async"
                 />
               </div>
             )}

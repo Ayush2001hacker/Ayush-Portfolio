@@ -189,8 +189,6 @@ export function ProfileHeader({ profile: p }: Props) {
     if (!canEditPhoto) setMobilePhotoOverlay(false);
   }, [canEditPhoto]);
 
-  const remotePhoto = profilePhotoSrc.startsWith("http");
-
   return (
     <section className="border-b border-[var(--ig-border)] px-3 pb-4 pt-2 sm:px-4 lg:px-0 lg:pb-10 lg:pt-8">
       <div className="flex items-start gap-2.5 sm:gap-3 lg:gap-16">
@@ -208,23 +206,15 @@ export function ProfileHeader({ profile: p }: Props) {
                   ref={avatarPhotoRootRef}
                   className="group relative h-full w-full overflow-hidden rounded-full ring-offset-2 ring-offset-[var(--ig-bg)] focus-within:ring-2 focus-within:ring-[var(--ig-link)]"
                 >
-                  {remotePhoto ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- dynamic API URL
-                    <img
-                      src={profilePhotoSrc}
-                      alt={`${p.fullName} — profile photo`}
-                      className="absolute inset-0 h-full w-full object-cover object-[center_15%]"
-                    />
-                  ) : (
-                    <Image
-                      src={profilePhotoSrc}
-                      alt={`${p.fullName} — profile photo`}
-                      fill
-                      className="object-cover object-[center_15%]"
-                      sizes="(max-width: 639px) 92px, (max-width: 1023px) 104px, 150px"
-                      priority
-                    />
-                  )}
+                  <Image
+                    src={profilePhotoSrc}
+                    alt={`${p.fullName} — profile photo`}
+                    fill
+                    className="object-cover object-[center_15%]"
+                    sizes="(max-width: 639px) 92px, (max-width: 1023px) 104px, 150px"
+                    priority
+                    decoding="async"
+                  />
                   {canEditPhoto ? (
                     <>
                       <input

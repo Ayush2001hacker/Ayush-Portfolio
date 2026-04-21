@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useId, useState } from "react";
 import { BlogMarkdown } from "@/components/blog/BlogMarkdown";
 import {
@@ -56,10 +57,13 @@ export function BlogArticleBody({ post, markdown }: Props) {
     <>
       {post.feedThumbSrc && (
         <div className="relative mb-6 aspect-[16/9] w-full overflow-hidden rounded-xl bg-[var(--ig-bg)] ring-1 ring-[var(--ig-border)]">
-          <img
+          <Image
             src={post.feedThumbSrc}
             alt=""
-            className="h-full w-full object-cover object-center"
+            fill
+            className="object-cover object-center"
+            sizes="(max-width: 640px) 100vw, 42rem"
+            priority
             decoding="async"
           />
         </div>

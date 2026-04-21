@@ -2,6 +2,16 @@
 
 Personal portfolio site: **Next.js** in `frontend/`, **Express** on Node in `backend/`.
 
+## Screenshots
+
+Desktop layout — sidebar navigation, profile, highlights, and repository grid.
+
+![Desktop portfolio view](docs/screenshots/desktop.png)
+
+Mobile layout — profile, tabs, repository tiles, and bottom navigation.
+
+![Mobile portfolio view](docs/screenshots/mobile.png)
+
 ## Prerequisites
 
 - Node.js 20+

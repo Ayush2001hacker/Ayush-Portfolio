@@ -13,7 +13,6 @@ type Props = {
 
 export function DesktopSidebar({ active, onChange }: Props) {
   const { profilePhotoSrc } = useSiteMedia();
-  const remotePhoto = profilePhotoSrc.startsWith("http");
 
   return (
     <aside
@@ -22,22 +21,15 @@ export function DesktopSidebar({ active, onChange }: Props) {
     >
       <div className="mb-6 flex justify-center xl:justify-start xl:px-2">
         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full shadow-sm ring-1 ring-[var(--ig-border)]">
-          {remotePhoto ? (
-            // eslint-disable-next-line @next/next/no-img-element -- same dynamic API URL as profile header
-            <img
-              src={profilePhotoSrc}
-              alt={profile.name}
-              className="absolute inset-0 h-full w-full object-cover object-[center_15%]"
-            />
-          ) : (
-            <Image
-              src={profilePhotoSrc}
-              alt={profile.name}
-              fill
-              className="object-cover object-[center_15%]"
-              sizes="44px"
-            />
-          )}
+          <Image
+            src={profilePhotoSrc}
+            alt={profile.name}
+            fill
+            className="object-cover object-[center_15%]"
+            sizes="44px"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
 

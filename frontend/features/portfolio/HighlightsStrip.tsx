@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { LayoutGroup, motion } from "framer-motion";
 import { useRef, useState } from "react";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
+import { isDataOrBlobImageSrc } from "@/lib/images/inlineSrc";
 import { useHighlights } from "@/lib/highlights/HighlightsContext";
 import type { Highlight } from "@/lib/highlights/types";
 import { AddHighlightModal } from "./AddHighlightModal";
@@ -11,12 +13,26 @@ import { IconPlus } from "./icons";
 import { PermissionDeniedWrap } from "./PermissionDeniedWrap";
 
 function HighlightOrb({ h }: { h: Highlight }) {
-  const hasImage = Boolean(h.imageSrc);
+  const src = h.imageSrc;
+  const hasImage = Boolean(src);
   return (
     <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[var(--ig-elevated)] text-2xl ring-1 ring-[var(--ig-border)] md:text-[26px]">
-      {hasImage ? (
-        // eslint-disable-next-line @next/next/no-img-element -- includes data URLs for custom highlights
-        <img src={h.imageSrc} alt="" className="h-full w-full object-cover object-center" />
+      {hasImage && src ? (
+        isDataOrBlobImageSrc(src) ? (
+          // eslint-disable-next-line @next/next/no-img-element -- data/blob cannot use the optimizer
+          <img src={src} alt="" className="h-full w-full object-cover object-center" />
+        ) : (
+          <span className="relative block h-full w-full">
+            <Image
+              src={src}
+              alt=""
+              fill
+              sizes="64px"
+              loading="lazy"
+              className="object-cover object-center"
+            />
+          </span>
+        )
       ) : (
         h.emoji
       )}

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useId, useState } from "react";
@@ -120,10 +121,13 @@ export function BlogModal({ post, onClose, onLeaveForArticle = onClose }: Props)
               }
             >
               {post.feedThumbSrc ? (
-                <img
+                <Image
                   src={post.feedThumbSrc}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  fill
+                  className="object-cover object-center"
+                  sizes="(max-width: 640px) 100vw, 32rem"
+                  loading="lazy"
                   decoding="async"
                 />
               ) : (
