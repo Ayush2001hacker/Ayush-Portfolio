@@ -7,7 +7,7 @@ import {
   useBlogPostInteractions,
 } from "@/lib/blog-post-interactions";
 import type { BlogPost } from "@/lib/site-content";
-import { IconCompose, IconHeart, IconShare } from "@/components/portfolio/icons";
+import { IconCompose, IconHeart, IconShare } from "@/features/portfolio/icons";
 
 type Props = {
   post: BlogPost;

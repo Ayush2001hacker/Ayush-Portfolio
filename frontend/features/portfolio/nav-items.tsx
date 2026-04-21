@@ -1,9 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import type { NavKey } from "@/lib/navigation/types";
 import { IconArticle, IconHome, IconSearch, IconSend, IconUser } from "./icons";
-
-export type NavKey = "home" | "stack" | "blogs" | "contact" | "admin";
 
 export const primaryNavItems: {
   key: NavKey;

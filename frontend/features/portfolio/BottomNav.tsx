@@ -1,10 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { NavKey } from "@/lib/navigation/types";
 import { primaryNavItems } from "./nav-items";
-import type { NavKey } from "./nav-items";
 
-export type { NavKey } from "./nav-items";
+export type { NavKey } from "@/lib/navigation/types";
 
 type Props = {
   active: NavKey;

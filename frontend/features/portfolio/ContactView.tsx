@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useResumeHref } from "@/components/providers/ResumeHrefContext";
 import { homeContact, profile } from "@/lib/site-content";
-import { IconLinkedIn, IconMail, IconPhone } from "./icons";
+import { IconGitHub, IconLinkedIn, IconMail, IconPhone } from "./icons";
 
 function ChevronRight() {
   return (
@@ -46,6 +46,8 @@ export function ContactView() {
     "",
   );
 
+  const githubLabel = profile.links.github.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "");
+
   const rows = [
     {
       key: "phone",
@@ -69,6 +71,14 @@ export function ContactView() {
       label: "LinkedIn",
       value: linkedinLabel,
       icon: <IconLinkedIn />,
+      external: true,
+    },
+    {
+      key: "github",
+      href: profile.links.github,
+      label: "GitHub",
+      value: githubLabel,
+      icon: <IconGitHub />,
       external: true,
     },
   ] as const;
@@ -129,17 +139,6 @@ export function ContactView() {
           </motion.a>
         </div>
       </div>
-
-      <motion.a
-        href={profile.links.github}
-        target="_blank"
-        rel="noreferrer"
-        whileHover={{ y: -2 }}
-        whileTap={{ scale: 0.98 }}
-        className="block rounded-2xl bg-[var(--ig-elevated)] p-4 text-center text-sm font-semibold ring-1 ring-[var(--ig-border)]"
-      >
-        GitHub
-      </motion.a>
     </div>
   );
 }

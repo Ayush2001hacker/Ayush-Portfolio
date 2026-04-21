@@ -1,9 +1,6 @@
-import { Router } from "express";
-import { KIND_SET } from "../constants.js";
+import { KIND_SET } from "../config/constants.js";
 import { Comment } from "../models/Comment.js";
 import { LikeRecord } from "../models/LikeRecord.js";
-
-const router = Router();
 
 function badKind(res) {
   return res.status(400).json({
@@ -20,8 +17,7 @@ function validateEntityId(entityId) {
   return typeof entityId === "string" && entityId.length > 0 && entityId.length <= 200;
 }
 
-/** GET /api/interactions/:kind/:entityId?clientId=… */
-router.get("/:kind/:entityId", async (req, res) => {
+export async function getInteractions(req, res) {
   const { kind, entityId } = req.params;
   if (!validateKind(kind)) return badKind(res);
   if (!validateEntityId(entityId)) {
@@ -55,10 +51,9 @@ router.get("/:kind/:entityId", async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "server_error", message: "Failed to load interactions" });
   }
-});
+}
 
-/** POST /api/interactions/:kind/:entityId/comments  body: { authorName, text } */
-router.post("/:kind/:entityId/comments", async (req, res) => {
+export async function postComment(req, res) {
   const { kind, entityId } = req.params;
   if (!validateKind(kind)) return badKind(res);
   if (!validateEntityId(entityId)) {
@@ -89,10 +84,9 @@ router.post("/:kind/:entityId/comments", async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "server_error", message: "Failed to save comment" });
   }
-});
+}
 
-/** POST /api/interactions/:kind/:entityId/like/toggle  body: { clientId } */
-router.post("/:kind/:entityId/like/toggle", async (req, res) => {
+export async function toggleLike(req, res) {
   const { kind, entityId } = req.params;
   if (!validateKind(kind)) return badKind(res);
   if (!validateEntityId(entityId)) {
@@ -131,6 +125,4 @@ router.post("/:kind/:entityId/like/toggle", async (req, res) => {
     console.error(err);
     return res.status(500).json({ error: "server_error", message: "Failed to toggle like" });
   }
-});
-
-export default router;
+}

@@ -96,7 +96,7 @@ export function IgFeedTile({
         )}
       </span>
       <span
-        className={`pointer-events-none absolute bottom-1.5 left-1.5 right-1.5 text-left lg:opacity-0 lg:transition-opacity lg:duration-150 lg:group-hover:opacity-0 ${
+        className={`pointer-events-none absolute bottom-1.5 left-1.5 right-1.5 max-lg:hidden text-left lg:opacity-0 lg:transition-opacity lg:duration-150 lg:group-hover:opacity-0 ${
           tileCoverFill ? "z-[12]" : "z-10"
         } ${
           neutralSurface

@@ -5,7 +5,10 @@ import { useResumeHref } from "@/components/providers/ResumeHrefContext";
 import { uploadResumePdf } from "@/lib/admin/siteUploadApi";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import { PermissionDeniedWrap } from "./PermissionDeniedWrap";
-import { fetchSiteSettings, type SiteSettingsResponse } from "@/lib/site/siteSettingsApi";
+import {
+  fetchSiteSettings,
+  type SiteSettingsResponse,
+} from "@/lib/site/siteSettingsApi";
 import { RESUME_PDF } from "@/lib/site-content";
 
 function AdminResumeSection() {
@@ -64,12 +67,15 @@ function AdminResumeSection() {
       className="mt-8 border-t border-[var(--ig-border)] pt-6 text-left"
       aria-labelledby="admin-resume-heading"
     >
-      <h2 id="admin-resume-heading" className="text-sm font-bold uppercase tracking-wide text-[var(--ig-text)]">
+      <h2
+        id="admin-resume-heading"
+        className="text-sm font-bold uppercase tracking-wide text-[var(--ig-text)]"
+      >
         Resume
       </h2>
       <p className="mt-1 text-xs text-[var(--ig-text-secondary)]">
-        PDF served from the API when uploaded; otherwise visitors use the built-in file{" "}
-        <span className="font-mono text-[var(--ig-text-muted)]">{builtInLabel}</span> from the site.
+        Upload a PDF that will be served to visitors when they click the
+        “Resume”
       </p>
 
       {statusError ? (
@@ -79,7 +85,9 @@ function AdminResumeSection() {
       ) : null}
 
       <div className="mt-4 rounded-xl border border-[var(--ig-border)] bg-[var(--ig-bg)] p-4">
-        <p className="text-xs font-semibold text-[var(--ig-text-secondary)]">Active resume</p>
+        <p className="text-xs font-semibold text-[var(--ig-text-secondary)]">
+          Active resume
+        </p>
         <p className="mt-1 text-sm font-medium text-[var(--ig-text)]">
           {usingApiResume ? "Uploaded PDF (API)" : `Built-in (${builtInLabel})`}
         </p>
@@ -117,7 +125,9 @@ function AdminResumeSection() {
           >
             {uploading ? "Uploading…" : "Upload new PDF"}
           </button>
-          <p className="mt-2 text-[11px] text-[var(--ig-text-muted)]">Max 12 MB. Replaces the current API resume.</p>
+          <p className="mt-2 text-[11px] text-[var(--ig-text-muted)]">
+            Max 12 MB. Replaces the current API resume.
+          </p>
           {uploadError ? (
             <p className="mt-2 text-xs font-medium text-rose-600" role="alert">
               {uploadError}
@@ -156,15 +166,20 @@ export function AdminView() {
   return (
     <div className="min-h-[40vh] px-4 py-6 lg:px-0" aria-label="Admin">
       <div className="mx-auto max-w-sm rounded-2xl border border-[var(--ig-border)] bg-[var(--ig-surface)] p-6 shadow-sm">
-        <h1 className="text-center text-lg font-bold text-[var(--ig-text)]">Admin</h1>
+        <h1 className="text-center text-lg font-bold text-[var(--ig-text)]">
+          Admin
+        </h1>
         <p className="mt-1 text-center text-xs text-[var(--ig-text-secondary)]">
-          Email and password — same flow as your other app (POST /api/users/login, Bearer token, GET
-          /api/users/current). No sign-up.
+          Enter your email and password to sign in. Admin Can upload a resume
+          PDF that will be served to visitors, change the profile photo, add
+          story highlights, and more in the future.
         </p>
 
         {isAdmin ? (
           <div className="mt-6 space-y-4 text-center">
-            <p className="text-sm font-medium text-[var(--ig-text)]">You are signed in.</p>
+            <p className="text-sm font-medium text-[var(--ig-text)]">
+              You are signed in.
+            </p>
             <p className="text-xs text-[var(--ig-text-secondary)]">
               Welcome Admin and Log out appear in the top bar on every tab.
             </p>
@@ -179,7 +194,10 @@ export function AdminView() {
         ) : (
           <form className="mt-6 space-y-4" onSubmit={onSubmit}>
             <div>
-              <label htmlFor="admin-email" className="mb-1 block text-xs font-semibold text-[var(--ig-text-secondary)]">
+              <label
+                htmlFor="admin-email"
+                className="mb-1 block text-xs font-semibold text-[var(--ig-text-secondary)]"
+              >
                 Email
               </label>
               <input
@@ -195,7 +213,10 @@ export function AdminView() {
               />
             </div>
             <div>
-              <label htmlFor="admin-password" className="mb-1 block text-xs font-semibold text-[var(--ig-text-secondary)]">
+              <label
+                htmlFor="admin-password"
+                className="mb-1 block text-xs font-semibold text-[var(--ig-text-secondary)]"
+              >
                 Password
               </label>
               <input
@@ -211,7 +232,10 @@ export function AdminView() {
               />
             </div>
             {error ? (
-              <p className="text-center text-xs font-medium text-rose-600" role="alert">
+              <p
+                className="text-center text-xs font-medium text-rose-600"
+                role="alert"
+              >
                 {error}
               </p>
             ) : null}

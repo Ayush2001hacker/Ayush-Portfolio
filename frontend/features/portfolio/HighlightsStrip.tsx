@@ -29,6 +29,7 @@ export function HighlightsStrip() {
   const { isAdmin, authReady } = useAdminAuth();
   const canAdd = authReady && isAdmin;
   const scroller = useRef<HTMLDivElement>(null);
+  const highlightAddAnchorRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState<Highlight | null>(null);
   const [addOpen, setAddOpen] = useState(false);
 
@@ -38,10 +39,10 @@ export function HighlightsStrip() {
 
   return (
     <LayoutGroup id="highlight-stories">
-      <div className="relative border-b border-[var(--ig-border)] py-3">
+      <div className="relative border-b border-[var(--ig-border)] px-4 py-3 sm:px-5 lg:px-0">
         <div
           ref={scroller}
-          className="flex gap-4 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:px-0 [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {list.map((h, i) => (
@@ -73,9 +74,12 @@ export function HighlightsStrip() {
           <PermissionDeniedWrap
             allowed={canAdd}
             authReady={authReady}
+            tooltipAnchor="leading"
+            anchorRef={highlightAddAnchorRef}
             className="flex shrink-0 flex-col items-center gap-1"
           >
             <motion.button
+              ref={highlightAddAnchorRef}
               key="highlight-add"
               type="button"
               initial={{ opacity: 0, scale: 0.92 }}

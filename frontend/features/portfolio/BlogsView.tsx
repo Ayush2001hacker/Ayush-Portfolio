@@ -109,7 +109,7 @@ export function BlogsView() {
         <>
           <motion.div
             layout
-            className="grid grid-cols-3 gap-[2px] bg-[var(--ig-border)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
+            className="grid grid-cols-3 gap-[2px] bg-[var(--ig-bg)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
           >
             <AnimatePresence mode="popLayout">
               {blogPosts.map((post, index) => (

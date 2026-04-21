@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { PortfolioApp } from "@/components/portfolio/PortfolioApp";
+import { PortfolioApp } from "@/features/portfolio/PortfolioApp";
 
 export default function Home() {
   return (

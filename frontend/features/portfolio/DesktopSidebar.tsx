@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useSiteMedia } from "@/components/providers/ResumeHrefContext";
 import { profile } from "@/lib/site-content";
-import type { NavKey } from "./nav-items";
+import type { NavKey } from "@/lib/navigation/types";
 import { primaryNavItems } from "./nav-items";
 
 type Props = {

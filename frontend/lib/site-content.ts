@@ -55,6 +55,7 @@ export const RESUME_PDF = "/Ayush_Bhagat_Resume.pdf";
 /** Home-only contact row — update phone/LinkedIn/Gmail here. */
 export const homeContact = {
   linkedinUrl: "https://www.linkedin.com/in/ayush-bhagat-00a79b22a/",
+  githubUrl: "https://github.com/Ayush2001hacker",
   phoneDisplay: "+91 70002 31599",
   phoneTel: "tel:+917000231599",
   gmailDisplay: "bhagatayush8818@gmail.com",
@@ -64,14 +65,14 @@ export const homeContact = {
 export const profile = {
   name: "Ayush Bhagat",
   fullName: "@Ayush2001hacker",
-  handle: "ayush",
+  handle: "Ayush2001hacker",
   verified: true,
   title: "Software Engineer · Data Axle",
   bio: "Software Engineer with 3.4+ years of experience building scalable frontend architectures, microfrontends, and cloud-native applications. Experienced in integrating HubSpot and Salesforce CRMs, optimizing performance, and leveraging AWS services. Salesforce Certified Developer and AWS Certified Cloud Practitioner.",
   photoSrc: "/ayush-portrait.png",
   location: "Pune, India · UTC+5:30",
   links: {
-    github: "https://github.com/Ayush2001hacker",
+    github: homeContact.githubUrl,
     linkedin: homeContact.linkedinUrl,
     email: homeContact.gmailHref,
     resume: RESUME_PDF,
@@ -82,6 +83,9 @@ export const profile = {
     { label: "certifications", value: "3" },
   ] as const,
 };
+
+/** Gradient wordmark in the top bar when Home is selected (mobile + desktop). */
+export const navHomeBrandTitle = "Ayush's Portfolio";
 
 export type BlogPost = {
   id: string;
@@ -101,7 +105,8 @@ export const blogPosts: BlogPost[] = [
   {
     id: "microfrontend-architecture",
     slug: "microfrontend-architecture",
-    title: "Microfrontend Architecture: How to Scale Frontend Like a Product Company",
+    title:
+      "Microfrontend Architecture: How to Scale Frontend Like a Product Company",
     date: "April 2026",
     feedThumbSrc: "/blog-microfrontend-architecture.png",
     summary:

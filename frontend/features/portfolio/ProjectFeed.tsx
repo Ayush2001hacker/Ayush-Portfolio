@@ -25,8 +25,18 @@ import { ProjectModal } from "./ProjectModal";
 
 type Tab = "repositories" | "projects" | "certifications" | "experience";
 
+export type ProjectFeedHomeDock = {
+  tab?: Tab;
+  openRepositoryId?: string;
+  openWorkId?: string;
+  openCertId?: string;
+  openExpId?: string;
+};
+
 type Props = {
   filterQuery?: string;
+  initialDock?: ProjectFeedHomeDock | null;
+  onInitialDockConsumed?: () => void;
 };
 
 type Sheet =
@@ -76,7 +86,7 @@ function PortfolioGridTile({ kind, entityId, onOpen, onBurst, ...tile }: Portfol
   );
 }
 
-export function ProjectFeed({ filterQuery = "" }: Props) {
+export function ProjectFeed({ filterQuery = "", initialDock = null, onInitialDockConsumed }: Props) {
   const [tab, setTab] = useState<Tab>("repositories");
   const [openRepo, setOpenRepo] = useState<Project | null>(null);
   const [sheet, setSheet] = useState<Sheet>(null);
@@ -86,6 +96,40 @@ export function ProjectFeed({ filterQuery = "" }: Props) {
   useEffect(() => {
     setSiteOrigin(window.location.origin);
   }, []);
+
+  useEffect(() => {
+    if (!initialDock) return;
+    if (initialDock.tab) setTab(initialDock.tab);
+    if (initialDock.openRepositoryId) {
+      const p = projects.find((x) => x.id === initialDock.openRepositoryId);
+      if (p) {
+        setTab("repositories");
+        setOpenRepo(p);
+      }
+    }
+    if (initialDock.openWorkId) {
+      const item = portfolioWorkItems.find((x) => x.id === initialDock.openWorkId);
+      if (item) {
+        setTab("projects");
+        setSheet({ kind: "work", item });
+      }
+    }
+    if (initialDock.openCertId) {
+      const cert = certifications.find((x) => x.id === initialDock.openCertId);
+      if (cert) {
+        setTab("certifications");
+        setSheet({ kind: "cert", cert });
+      }
+    }
+    if (initialDock.openExpId) {
+      const role = experienceRoles.find((x) => x.id === initialDock.openExpId);
+      if (role) {
+        setTab("experience");
+        setSheet({ kind: "exp", role });
+      }
+    }
+    onInitialDockConsumed?.();
+  }, [initialDock, onInitialDockConsumed]);
 
   const repoFiltered = useMemo(() => {
     const q = filterQuery.trim().toLowerCase();
@@ -202,7 +246,7 @@ export function ProjectFeed({ filterQuery = "" }: Props) {
       {tab === "repositories" && (
         <motion.div
           layout
-          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-border)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
+          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-bg)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
         >
           <AnimatePresence mode="popLayout">
             {repoFiltered.map((project, index) => (
@@ -226,7 +270,7 @@ export function ProjectFeed({ filterQuery = "" }: Props) {
       {tab === "experience" && (
         <motion.div
           layout
-          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-border)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
+          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-bg)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
         >
           <AnimatePresence mode="popLayout">
             {experienceRoles.map((role, index) => (
@@ -251,7 +295,7 @@ export function ProjectFeed({ filterQuery = "" }: Props) {
       {tab === "certifications" && (
         <motion.div
           layout
-          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-border)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
+          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-bg)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
         >
           <AnimatePresence mode="popLayout">
             {certifications.map((c, index) => (
@@ -276,7 +320,7 @@ export function ProjectFeed({ filterQuery = "" }: Props) {
       {tab === "projects" && (
         <motion.div
           layout
-          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-border)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
+          className="grid grid-cols-3 gap-[2px] bg-[var(--ig-bg)] pb-8 lg:grid-cols-4 lg:gap-2 lg:bg-transparent lg:pb-10 xl:grid-cols-5 2xl:grid-cols-6 2xl:gap-2.5"
         >
           <AnimatePresence mode="popLayout">
             {portfolioWorkItems.map((item, index) => (

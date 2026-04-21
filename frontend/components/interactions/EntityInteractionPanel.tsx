@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useId, useState } from "react";
-import { IconCompose, IconHeart, IconShare } from "@/components/portfolio/icons";
+import { IconCompose, IconHeart, IconShare } from "@/features/portfolio/icons";
 import { useInteractionTarget } from "@/lib/interactions/hooks";
 import { formatCommentTime } from "@/lib/interactions/formatCommentTime";
 import type { InteractionKind } from "@/lib/interactions/types";

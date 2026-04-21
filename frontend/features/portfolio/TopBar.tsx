@@ -2,15 +2,18 @@
 
 import { motion } from "framer-motion";
 import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
-import { IconMoon, IconSun } from "./icons";
+import { AnimatedSearchHint } from "./AnimatedSearchHint";
+import { IconSearch } from "./icons";
+import { ThemeToggleButton } from "./ThemeToggleButton";
 
 type Props = {
   title?: string;
   theme: "light" | "dark";
   onToggleTheme: () => void;
+  onOpenSearch: () => void;
 };
 
-export function TopBar({ title, theme, onToggleTheme }: Props) {
+export function TopBar({ title, theme, onToggleTheme, onOpenSearch }: Props) {
   const { isAdmin, authReady, logout } = useAdminAuth();
   const showAdmin = authReady && isAdmin;
 
@@ -20,7 +23,7 @@ export function TopBar({ title, theme, onToggleTheme }: Props) {
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="mx-auto flex h-11 max-w-lg items-center gap-2 px-3 sm:h-12">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
           <motion.span
             layout
             className="min-w-0 shrink truncate text-lg font-semibold tracking-tight text-transparent"
@@ -53,14 +56,16 @@ export function TopBar({ title, theme, onToggleTheme }: Props) {
         </div>
         <button
           type="button"
-          onClick={onToggleTheme}
-          className="ig-tap-scale flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--ig-text)] hover:bg-[var(--ig-elevated)]"
-          aria-label={
-            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-          }
+          onClick={onOpenSearch}
+          className="ig-tap-scale flex min-w-0 shrink-0 items-center gap-1 rounded-full border border-transparent py-0.5 pl-1.5 pr-0.5 text-[var(--ig-text)] hover:border-[var(--ig-border)] hover:bg-[var(--ig-elevated)] sm:pl-2"
+          aria-label="Open search"
         >
-          {theme === "dark" ? <IconSun /> : <IconMoon />}
+          <AnimatedSearchHint className="text-[10px] sm:text-[11px]" />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
+            <IconSearch />
+          </span>
         </button>
+        <ThemeToggleButton theme={theme} onToggleTheme={onToggleTheme} />
       </div>
     </header>
   );
