@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { fetchInteractions, postComment, toggleLikeRequest } from "./api";
+import { deleteComment, fetchInteractions, postComment, toggleLikeRequest } from "./api";
 import { getClientId } from "./clientId";
 import { compositeKey } from "./key";
 import type { InteractionComment, InteractionKind } from "./types";
@@ -62,6 +62,22 @@ export const addCommentRemote = createAsyncThunk(
   },
 );
 
+export const deleteCommentRemote = createAsyncThunk(
+  "interactions/deleteComment",
+  async (
+    args: { kind: InteractionKind; id: string; commentId: string; token: string },
+    { dispatch },
+  ) => {
+    try {
+      await deleteComment(args.kind, args.id, args.commentId, args.token);
+      return { commentId: args.commentId };
+    } catch (e) {
+      await dispatch(loadInteractions({ kind: args.kind, id: args.id }));
+      throw e;
+    }
+  },
+);
+
 export const interactionsSlice = createSlice({
   name: "interactions",
   initialState,
@@ -88,6 +104,15 @@ export const interactionsSlice = createSlice({
         if (!state.comments[key]) state.comments[key] = [];
         state.comments[key].push(action.payload.comment);
         state.hydrated[key] = true;
+      })
+      .addCase(deleteCommentRemote.fulfilled, (state, action) => {
+        const { kind, id } = action.meta.arg;
+        const key = compositeKey(kind, id);
+        const removeId = action.payload.commentId;
+        const list = state.comments[key];
+        if (list) {
+          state.comments[key] = list.filter((c) => c.id !== removeId);
+        }
       });
   },
 });

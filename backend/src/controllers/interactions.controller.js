@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { KIND_SET } from "../config/constants.js";
 import { Comment } from "../models/Comment.js";
 import { LikeRecord } from "../models/LikeRecord.js";
@@ -83,6 +84,29 @@ export async function postComment(req, res) {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "server_error", message: "Failed to save comment" });
+  }
+}
+
+/** Portfolio admin only — requires `Authorization: Bearer` (see `validateTokenHandler`). */
+export async function deleteComment(req, res) {
+  const { kind, entityId, commentId } = req.params;
+  if (!validateKind(kind)) return badKind(res);
+  if (!validateEntityId(entityId)) {
+    return res.status(400).json({ error: "invalid_entity_id", message: "entityId is required" });
+  }
+  if (!mongoose.isValidObjectId(commentId)) {
+    return res.status(400).json({ error: "invalid_comment_id", message: "commentId must be a valid id" });
+  }
+
+  try {
+    const result = await Comment.deleteOne({ _id: commentId, kind, entityId }).exec();
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "not_found", message: "Comment not found" });
+    }
+    return res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "server_error", message: "Failed to delete comment" });
   }
 }
 

@@ -21,12 +21,12 @@ export function dispatchBlogSync() {
 export function useBlogPostInteractions(postId: string | null | undefined) {
   const dispatch = useAppDispatch();
   const id = postId ?? null;
-  const { liked, toggleLike, comments, addCommentText } = useInteractionTarget("blog", id);
+  const { liked, toggleLike, comments, addCommentText, removeComment } = useInteractionTarget("blog", id);
 
   const reload = useCallback(() => {
     if (!id) return;
     dispatch(loadInteractions({ kind: "blog", id }));
   }, [dispatch, id]);
 
-  return { liked, toggleLike, comments, addCommentText, reload };
+  return { liked, toggleLike, comments, addCommentText, removeComment, reload };
 }

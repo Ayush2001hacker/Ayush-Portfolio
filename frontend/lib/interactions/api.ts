@@ -54,6 +54,26 @@ export async function postComment(
   return { comment: data.comment };
 }
 
+export async function deleteComment(
+  kind: InteractionKind,
+  entityId: string,
+  commentId: string,
+  token: string,
+): Promise<void> {
+  const base = assertPublicApiUrl();
+  const res = await fetch(
+    `${base}/api/interactions/${encodeURIComponent(kind)}/${encodeURIComponent(entityId)}/comments/${encodeURIComponent(commentId)}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  if (res.ok || res.status === 404) {
+    return;
+  }
+  throw new Error(`DELETE comment failed: ${res.status}`);
+}
+
 export async function toggleLikeRequest(
   kind: InteractionKind,
   entityId: string,

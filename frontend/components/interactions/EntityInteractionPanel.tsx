@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useId, useState } from "react";
+import { CommentCard } from "@/components/interactions/CommentCard";
 import { IconCompose, IconHeart, IconShare } from "@/features/portfolio/icons";
+import { useAdminAuth } from "@/lib/admin/AdminAuthContext";
 import { useInteractionTarget } from "@/lib/interactions/hooks";
-import { formatCommentTime } from "@/lib/interactions/formatCommentTime";
 import type { InteractionKind } from "@/lib/interactions/types";
 
 export type EntityInteractionPanelProps = {
@@ -14,8 +15,10 @@ export type EntityInteractionPanelProps = {
 };
 
 export function EntityInteractionPanel({ kind, id, shareUrl }: EntityInteractionPanelProps) {
-  const { liked, comments, toggleLike, addCommentText } = useInteractionTarget(kind, id);
+  const { isAdmin, authReady } = useAdminAuth();
+  const { liked, comments, toggleLike, addCommentText, removeComment } = useInteractionTarget(kind, id);
   const [shareLabel, setShareLabel] = useState("Share");
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
   const [commentOpen, setCommentOpen] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [commentDraft, setCommentDraft] = useState("");
@@ -43,6 +46,24 @@ export function EntityInteractionPanel({ kind, id, shareUrl }: EntityInteraction
     setCommentDraft("");
     setCommentOpen(false);
   }, [commentDraft, nameDraft, addCommentText]);
+
+  const onDeleteComment = useCallback(
+    (commentId: string) => {
+      void (async () => {
+        setDeletingCommentId(commentId);
+        try {
+          await removeComment(commentId);
+        } catch (err) {
+          console.error("[interactions] Delete comment failed", err);
+        } finally {
+          setDeletingCommentId(null);
+        }
+      })();
+    },
+    [removeComment],
+  );
+
+  const showAdminDelete = authReady && isAdmin;
 
   return (
     <div className="space-y-4">
@@ -148,14 +169,13 @@ export function EntityInteractionPanel({ kind, id, shareUrl }: EntityInteraction
         ) : (
           <ul className="mt-3 space-y-2">
             {comments.map((c) => (
-              <li
+              <CommentCard
                 key={c.id}
-                className="rounded-xl border border-[var(--ig-border)] bg-[var(--ig-bg)] px-3 py-2.5"
-              >
-                <p className="text-sm font-semibold text-[var(--ig-text)]">{c.authorName}</p>
-                <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-[var(--ig-text)]">{c.text}</p>
-                <p className="mt-1.5 text-[11px] text-[var(--ig-text-muted)]">{formatCommentTime(c.at)}</p>
-              </li>
+                comment={c}
+                showDelete={showAdminDelete}
+                onDelete={onDeleteComment}
+                deletePending={deletingCommentId === c.id}
+              />
             ))}
           </ul>
         )}

@@ -2,7 +2,8 @@
 
 import { useCallback, useLayoutEffect } from "react";
 import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
-import { addCommentRemote, loadInteractions, toggleLikeRemote } from "./interactionsSlice";
+import { readAdminToken } from "@/lib/admin/token";
+import { addCommentRemote, deleteCommentRemote, loadInteractions, toggleLikeRemote } from "./interactionsSlice";
 import { compositeKey } from "./key";
 import type { InteractionComment, InteractionKind } from "./types";
 import type { AppDispatch, RootState } from "./store";
@@ -66,11 +67,26 @@ export function useInteractionTarget(kind: InteractionKind, id: string | null | 
     [dispatch, kind, id],
   );
 
+  const onRemoveComment = useCallback(
+    (commentId: string) => {
+      if (!id) {
+        return Promise.reject(new Error("No entity id"));
+      }
+      const token = readAdminToken();
+      if (!token) {
+        return Promise.reject(new Error("Admin token missing"));
+      }
+      return dispatch(deleteCommentRemote({ kind, id, commentId, token })).unwrap();
+    },
+    [dispatch, kind, id],
+  );
+
   return {
     liked,
     likeCount,
     comments,
     toggleLike: onToggleLike,
     addCommentText: onAddCommentText,
+    removeComment: onRemoveComment,
   };
 }

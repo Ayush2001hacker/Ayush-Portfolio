@@ -5,6 +5,9 @@ node_modules/
 frontend/.next/
 frontend/out/
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # Env
 .env
 .env*.local
